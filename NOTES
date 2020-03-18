@@ -1,0 +1,9 @@
+;;; -*- mode: text; -*-
+
+* Reaction channel is controlled through epirea.  Variables are set
+  and used later in the code.
+
+  * MPI is pion mass
+  * mm_exp needs investigation
+  * arrays id, q and pdgid are straightforward
+  * 

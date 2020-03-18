@@ -1,0 +1,313 @@
+;;; -*- mode: text; -*-
+
+- Delete output files if they already exist when onepigen initially
+  runs, but only after successfully receiving input.
+
+% (POSSIBLY DEFUNCT) Make the maid_xsection project a dependency of
+  onepigen.  At the moment, every time I fix a bug or some other
+  problem with accessing the MAID tables and computing the raw cross
+  section, I have to make the same changes in multiple places.  The
+  maid_xsection project provides access to the dsigma function
+  however, which means that I could simply link to it and not include
+  the raw cross section files in the onepigen project.
+
+  DEFUNCT NOTE: I tried naively making maid_xsection a dependency of
+  onepigen, but I immediately got W-Q2 out of range errors.  I may
+  have modified some functions to use a changing target mass in
+  onepigen which might affect even the dsigma function.  If this is
+  true then I can't naively use maid_xsection in onepigen.
+
++ (FINE-TUNING FOR LATER DATE) Fix target mass handling.
+
+  For no Fermi motion, there should be one mass for the proton and one
+  for the neutron.  This is already working, but for the Fermi motion
+  case there should be
+
+  * A mass for the boost which has different distributions
+  * An energy-conserving mass for giving to the MAID generator
+
+  Right now, I'm just sending either the proton or neutron mass to the
+  MAID generator, which means that energy is not conserved.
+
+  UPDATE: It seems that using the on-shell mass for the boost is the
+  only thing that makes sense, since otherwise beta could go above 1.
+  Not only this, but after talking with Camilo the other day, it seems
+  that I've found a potential resolution to the energy conservation
+  problem!
+
+  The logic is that Einstein's theory of relativity is only aware of
+  the kinetic and mass energy of a system when performing the Lorentz
+  boost, so adding the binding energy to the E energy used in the
+  four-momentum does not make sense here.  Instead, the deuterium
+  particle should be boosted into the target-at-rest frame and then a
+  new binding energy calculated from this target-at-rest, but deuteron
+  and spectator moving frame.  I haven't worked out why exactly this
+  isn't handled correctly mathematically the way I was doing it, but
+  from basic investigations, doing the boosts separately and then
+  recalculating the binding energy seems to give much more reasonable
+  energy results, with 0.5 GeV momentum in the spectator having only
+  0.06 GeV binding energy.
+
+  UPDATE: After Ralf, Ye and I talked about these ideas, it seems that
+  the boost definitely makes sense since the only well-defined frame
+  transformation is for on-mass shell particles.  The energy
+  conservation problem is much trickier to handle, but the approach we
+  will take from now on is to use on-mass shell target for everything
+  at first, and only at the end modify the mass sent to the MAID
+  generator so as to match the experimental data as well as can be
+  expected.  The significant differences I achieved before do not seem
+  to match reality at all, and since this entire project is pragmatic,
+  it doesn't make sense to pursue those lines of reasoning within the
+  scope of the PhD.
+
++ (FINE-TUNING) Fix energy loss of electron due to the beam moving a
+  distance through the target.  At the moment, the modified beam is
+  being used to calculate the energy loss, but this is incorrect
+  unless it turns out that Lorentz transforming the energy doesn't
+  change the shape of the distribution.  This might be fixed by simply
+  moving the energy loss section to the start of the event loop.
+
+- Fix potential W-Q^2 distribution bug.  Fermi smearing seems to
+  change the W-Q^2 distribution by shrinking the W distribution for
+  higher Q^2.
+
+  UPDATE: Equivalent to the mass shell problem, so marking complete.
+
++ Add Bethe-Bloch dE/dx for deuterium to target handling of onepigen,
+  use particle data booklet to find formulas and deuterium
+  information.
+
++ Need to recalculate radiation length for deuterium since the actual
+  material constant is radiation length / density, so I need to find
+  the density to be able to calculate the radiation length of our
+  target.
+
+  NOTE: I think this was already completed, but I haven't checked the
+  code to make sure.
+
+- Change input formatting to namelist
+
+- Add W limits, including modifications to the dsigma or appropriate
+  function to allow a W upper limit of 2.0 GeV.
+
+- Remove conditional output of neutral particles.  Always output all
+  particles, and let the user filter on what they want.
+
+- Fix neutron and proton target support
+
+  UPDATE: I have modified the parts of onepigen.F that should matter,
+  just need to check to see that the program actually generates pi-
+  channel output.
+
+  UPDATE: onepigen compiles and runs with either proton or neutron.
+
+  UPDATE: I'm separating the remaining work into an optional OCD-level
+  precision task which would have the correct hadron masses used
+  everywhere in the simulation, but since the difference between the
+  proton and neutron masses is inconsequential in our simulations it's
+  not really necessary.
+
++ (OPTIONAL) Update hadron masses at all points in the simulation so
+  that neutron and proton masses are used where appropriate.  At the
+  moment, the program uses the proton mass for all hadron masses in
+  the simulation, which might not result in the most accurate
+  estimates of cross sections and thrown distributions, although this
+  might not matter at all for calculating acceptances or comparing
+  with experimental yields.
+
+- Add rotation_matrices function which computes the rotation and
+  inverse rotation matrices for placing the electron beam back on the
+  z-axis after boosting, and then for adjusting the final state angles
+  using the inverse rotation.
+
+- Add additional modified version of bos_out routine, possibly called
+  bos_out_fermi_motion, which allows input arguments in order to
+  support writing additional particles and needing to rotate final
+  state particles.
+
+- Modify the call to bos_out so that it contains an if statement to
+  choose between bos_out_fermi_motion or normal bos_out.
+
+- Add Fermi motion support.  Includes output of spectator
+
+  Notes on this:
+
+  * I should be able to largely leave the aao_rad programming alone,
+    since what I really want to do each event is
+
+   -1. Throw Fermi 4-momentum
+   -2. Calculate boost to put the moving target at rest
+   -3. Find the modified beam energy
+   -4. Feed the modified beam energy into aao_rad
+   -5. Rotate and boost aao_rad's final state thrown particles
+   -6. Add spectator particle to output
+
+- Since the beam energy is different for each event, this means that
+  the following variables are affected and should have their values
+  set per-event instead of globally:
+
+  - ebeam (need to copy this to my own global variable), use it for
+    computing the energy loss, and then set it to the boosted value
+    before going further into aao_rad's algorithm.
+  - q2max
+  - q2_max
+  - uq2_min
+  - uq2rng
+
+- Support deuterium target.  It looks like the radiation length for
+  the target is needed.
+
+  UPDATE: Changed variable and added if statement for selecting
+  deuterium target, but need to add support variable setting above.
+
+- (CRITICAL) Fix target mass.  Right now mp seems to be used directly
+  in many calculations, so this should be changed to make use of a
+  target_mass or maybe target_rest_mass variable which is set after
+  boosting or just to the appropriate target mass value depending on
+  the program settings.
+
+  For energy conservation to work properly, the target's virtuality
+  must be provided to aao_rad through modifying the target mass.
+  Right now, the target mass is just a fixed mp value.  I will need to
+  comb through the formulas to find out which mp's are the target mass
+  and which are the final state hadron mass.
+
+  It looks like the mm_exp variable only deals with the final state
+  particle mass however, so DO NOT CHANGE MM_EXP.
+
+  Need to look up any information on the A0 algorithm as well as the
+  Mo and Tsai integration algorithm to find the true definitions of
+  the factors used in the sigma function.
+
+  Specific functions needing fixing:
+
+  - onepigen
+  - sigma
+  - missm
+  - dsigma
+
+  Specific terms needing fixing:
+
+  - kfac (1110, 1643) (mp --> mt)
+  - nu (the factor of 1/(2*mp) is most likely the same for kfac and
+    nu, so once I derive nu's formula I can use the factor in kfac.)
+    (mp --> mt)
+  - q0 (also a name for nu)
+  - q2max (has to be mt because it's the value for elastic scattering)
+  - u0
+  These three factors are left alone as they form part of the cross
+  section model:
+  - f
+  - g
+  - fkt (two different formulas, make sure mp is right in each one)
+  
+  - wmin (purely final state)
+  - w2
+  - wreal
+  - ewreal
+  - pstar
+  - mm2
+  - epmax
+  - ep_test
+  * Not epcm, looks like a pure final state variable
+  * For now I'm leaving alone any mp terms in the cross section
+    formulas since these are most likely not appropriate to be
+    changed.
+
+- (TECHNICALLY OPTIONAL) Add support for non-radiative effect
+  simulation.
+
+  bos_out is the same in aao_rad and aao_norad, so the main caculation
+  bodies from aao_rad and aao_norad are most likely affecting the same
+  variables, and therefore using radiative or non-radiative should be
+  as easy as
+
+  -1. Add a control flag
+  -2. Decide npart based on this control flag (3 for norad, 4 for rad)
+  -3. Copy aao_norad main calculation body into the onepigen loop,
+      protected by an if-then statement, and wrap the existing
+      onepigen calculation body in the else statement.
+
++ (OPTIONAL) Add MAID 2007 table support.  Would need to modify
+  maid_lee.F as well as test.inp comment.
+
+************ Testing ************
+
++ (CRITICAL) Fix missing mass squared distribution.  Ye's results from
+  the onepigen with a fixed Q^2 range show that the missing mass
+  distribution for the spectator particle has a pronounced low range
+  compared with both her simulation and the data.
+
+  To be precise: mm^2 = (q + d - pi- - p)^2.
+
+  This missing mass might be a separate problem from the hadron
+  missing mass as generated by aao_rad's routines.
+
+  I need to
+
+  +1. Compare the hadron missing mass from aao_rad and onepigen with
+      Fermi-motion.  If these distributions match then the spectator
+      missing mass is indeed a separate problem.
+
+  +2. Compare shape of hadron missing mass squared distribution from
+      experiment with my simulated distribution.  The change in width
+      of this distribution should be due to Fermi smearing, so this
+      has to match as well as the spectator missing mass.
+
+- (CRITICAL) Fix Q^2 range.  As per Ye's test results, the Q^2 range
+  of thrown data is cutoff at the right tail relative to aao_rad.
+  This right end of the tail is where the majority of empirically
+  reconstructed data comes from, which means that this bug critically
+  affects results.  Where the Q^2 distribution is present, it looks
+  identical to Ye's results, as does the W distribution.
+
+  UPDATE: I've added many debug statements, and I was trying to print
+  out the q2_max variable whenever it was modified to see what the Q^2
+  max values are on an event level.  JLab stopped responding tonight,
+  so the required steps are to upload onepigen.F, "make clean; make",
+  and run onepigen with the test/smear.inp file, looking for "q2_max="
+  output.
+
+  UPDATE: The source of the Q^2 range problem was the "q2_max = q2max"
+  statement.  This was presumably an optimization, but for my case it
+  cut away too much of the Q^2 range.  I still don't fully understand
+  why it didn't work, but in any case it works now.  I had disabled a
+  number of features in the process of finding this source, so now
+  I've enabled them and am awaiting results to check again.
+
++ (CRITICAL) Fix missing mass distribution bug.  aao_rad reproduces
+  the proper missing mass distribution for Ye, but onepigen does not.
+  This bug might actually be fixed by fixing the Q^2 range, but it's
+  not clear if this is the case.  Therefore, the Q^2 range should be
+  fixed first, and then this problem should be investigated in detail
+  if it still remains.
+
+  UPDATE: Fixing Q^2 did not fix the missing mass problem.  After
+  talking with Ye, it's not clear to me why her reconstructed
+  simulation should have such a good distribution for the missing mass
+  though, since the thrown data should have a delta function, but the
+  reconstructed simulation data has a standard missing mass squared
+  distribution.  I need to compare all the relevant quantities in the
+  target at rest frame with Fermi motion turned on and off to see
+  what's happening.  It may be that other missing masses are not
+  correct.
+
++ (CRITICAL) Fix final state energy distributions.  Ye sees a
+  discrepancy in the final state hadron energies.  The difference is
+  visible for both pion and proton, but more noticeable for the
+  proton.  Ye thinks that perhaps this energy difference might be part
+  or all of the cause of the missing mass problem.  It's not clear to
+  me without further testing since these energy discrepancies were
+  found in the lab frame.
+
++ Test onepigen with no radiative effects and no smearing against
+  aao_norad for proton target data.
+
++ Test onepigen with radiative effects and no smearing against aao_rad
+  for proton target data.
+
+************ Code-level fixes and details ************
+
+- see note at if(epirea .eq. 3) filerz(13:13)='p'
+
++ (OPTIONAL) Use better namelist variable names

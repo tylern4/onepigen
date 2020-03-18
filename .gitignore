@@ -1,0 +1,4 @@
+.emacs_backups/
+*.o
+*.root
+*.bos
