@@ -1,11 +1,12 @@
-      subroutine throw_fermi(target_type,offshellness,target,
-     +     spectator)
+      subroutine throw_fermi(target_type,fermi_motion,
+     +     offshellness,target,spectator)
       implicit none
 
 #include "bcs.inc"
 
       real target(4), spectator(4)
       integer target_type
+      integer fermi_motion
       integer offshellness
 
       real targetmag
@@ -30,7 +31,7 @@ c     All in GeV/c^2
 
       real target_mass, spectator_mass
 
-      real invcdf
+      real bonn_invcdf, paris_invcdf, hulthen_invcdf
       real random
       real eleconshell
 
@@ -41,8 +42,17 @@ c     Misc. variables
       real E_t, E_s, leftover_energy
 
       random=rand(0)
-      targetmag = invcdf(random)
-
+      if(fermi_motion .eq. 1) then
+         targetmag = bonn_invcdf(random)
+      elseif(fermi_motion .eq. 2) then
+         targetmag = paris_invcdf(random)
+      elseif(fermi_motion .eq. 3) then
+         targetmag = hulthen_invcdf(random)
+      else
+c     Defaults back to CD-Bonn
+         targetmag = bonn_invcdf(random)
+      endif
+      
 c     debug
       
 c     This setting is to test the effect of smearing by reducing the

@@ -33,10 +33,11 @@
 !     fermi_motion is an integer variable for controlling Fermi smearing
 !     behavior:
 !
-!     fermi_motion = 0: Normal aao_rad behavior
+!     fermi_motion = 0: No Fermi-motion (Normal aao_rad behavior)
 !     fermi_motion = 1: Deuterium target, CD-Bonn target Fermi momentum
-!     (BELOW OPTION INOPERABLE)
+!     (BELOW OPTIONS INOPERABLE)
 !     fermi_motion = 2: Deuterium target, Paris target Fermi momentum
+!     fermi_motion = 3: Deuterium target, Hulthen target Fermi momentum
  fermi_motion = 0
 
 !     fermi_energy is an integer variable for controlling how the energy

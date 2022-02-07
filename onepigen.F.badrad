@@ -795,8 +795,7 @@ c     Handle Fermi motion effects
       if(fermi_motion .gt. 0) then
 c     Throw Fermi momentum
 
-         call throw_fermi(target_type,fermi_motion,
-     +        fermi_energy,
+         call throw_fermi(target_type,fermi_energy,
      +        target,spectator)
 
 c     Calculate boost to put the moving target at rest
@@ -1250,7 +1249,7 @@ c     When the target is moving, this calculation would be using an
 c     incorrect beam energy, so it must be adjusted:
 
          ebeam_boosted = ebeam  ! store boosted beam energy
-         ebeam = beam_energy    ! set ebeam to experiment beam energy
+c         ebeam = beam_energy    ! set ebeam to experiment beam energy
 
 c     Now calculate the radiation loss
 
