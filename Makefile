@@ -1,16 +1,53 @@
-# $Id: Makefile,v 1.9 2004/02/20 18:12:43 holtrop Exp $
-#
-CREATED_F=onepigen.F
-LIBNAMES  = $(MAIN_DIRECTORY)$(ADD_DEBUG) 
-LIBNAMES  +=clasutil$(ADD_DEBUG) fputil$(ADD_DEBUG) recutl$(ADD_DEBUG) \
-    bos$(ADD_DEBUG) fpack$(ADD_DEBUG) online_dummy$(ADD_DEBUG) \
-    c_bos_io$(ADD_DEBUG)
+# compiler
+FC = gfortran
+CC = gcc
 
-LEPTO=$(shell ls -1 $(CERN)/$(CERN_LEVEL)/lib/liblepto*.a)
-LEPTO_LIB=$(subst lib,,$(basename $(notdir $(LEPTO))))
+# compile flags
+FCFLAGS = -g -Ofast -ffixed-line-length-0 -std=legacy -Iinclude
+CFLAGS = -g -Ofast -Wno-pointer-to-int-cast -Iinclude
 
-LIBNAMES  +=$(LEPTO_LIB) jetset74 packlib mathlib kernlib $(LEPTO_LIB) $(RECSIS_MD_LIBS)
-SHARED_LIBS=$(RECSIS_SHARED_LIBS)
-include $(CLAS_CMS)/Makefile
-#
-# end of makefile
+SRC_DIR = src
+OBJ_DIR = lib
+BIN_DIR = bin
+
+# source files and objects
+FSRCS = $(wildcard $(SRC_DIR)/*.f90)
+FFSRCS = $(wildcard $(SRC_DIR)/*.F)
+CSRCS = $(wildcard $(SRC_DIR)/*.c)
+
+FOBJ = $(FSRCS:$(SRC_DIR)/%.f90=$(OBJ_DIR)/%.o)
+FFOBJ = $(FFSRCS:$(SRC_DIR)/%.F=$(OBJ_DIR)/%.o)
+COBJ = $(CSRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+
+# program name
+PROGRAM = onepigen
+
+MKDIR_P = mkdir -p
+.PHONY: directories
+
+
+all: directories $(COBJ) $(FOBJ) $(FFOBJ) $(PROGRAM)
+
+directories: ${OBJ_DIR} ${BIN_DIR}
+
+${OBJ_DIR}:
+	${MKDIR_P} ${OBJ_DIR}
+
+${BIN_DIR}:
+	${MKDIR_P} ${BIN_DIR}
+
+$(PROGRAM): $(FOBJ) $(COBJ)
+	$(FC) $(FCFLAGS) -o bin/$@_lund $(COBJ) $(FOBJ) $(FFOBJ)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90 
+	$(FC) $(FCFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.F
+	$(FC) $(FCFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+
+clean:
+	rm -f lib/*.o bin/aao_rad

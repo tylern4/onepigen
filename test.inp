@@ -1,7 +1,7 @@
 ! Make sure to keep the &args and the final /, this is parsed using
 ! Fortran's namelist I/O
 &args
- nmax = 100        ! number of events to throw/simulate
+ nmax = 1000        ! number of events to throw/simulate
  th_opt = 5        ! (1=A0, 2=daresbury, 3=hlee pi0, 4=MAID98, 5=MAID2000, 6=MAID2003, 7=MAID2007) (MAID2007 not functional currently)
  flag_ehel = 0     ! electron helicity flag (1 for polarized, 0 for unpolarized)
  epirea = 3        ! reaction channel (1=pi0, 2=pi-, 3=pi+)
