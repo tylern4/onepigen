@@ -198,6 +198,7 @@ c     character*1 ich1
          character*5 tag(n)
          character*13 filerz
          character*13 file_out
+         character*13 lund_out
          character*13 file_sum
 c         character*13 file_bos
          character*8 recname
@@ -221,6 +222,7 @@ c     DATA MPIM /.1395/ ! not needed since same mass as pi+
 
          data filerz   /'onepigen.rz'/
          data file_out /'onepigen.out'/
+         data lund_out /'onepigen.dat'/
          data file_sum /'onepigen.sum'/
 c         data file_bos /'onepigen.evt'/
          data ctime    /'                            '/
@@ -640,6 +642,7 @@ c     Name the output rz file according to meson type and beam energy.
 c     filerz=aaoradgen-pi0-1.6-0811.rz.0, for example.
 
          open(unit=12,file=file_out)
+         open(unit=4,file=lund_out)
 
 c     Initialize BOS
 
@@ -1167,13 +1170,21 @@ c     motion algorithm:
 c
 c     * Rotate and boost aao_rad's final state thrown particles
 c     * Add spectator particle to output
-                  write(*,*) "bos_out_fermi_motion"
-c                  call bos_out_fermi_motion(target_type,spectator_type,
-c     +                 spectator,
-c     +                 invrotate,invboost)
+                  write(4, *) npart, 1, 1, 1, flag_ehel, \
+                  11, ebeam, 1, 1, 0.0
+                  do i = 1, npart
+                     write(4, *) i, 0.0, 1, pdgid(i), 0, 0, \
+                     p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
+                     pdgid(i), v(i, 1), v(i, 2), v(i, 3)
+                  end do
                else
-                  write(*,*) "bos_out"
-c                  call bos_out     ! Pack the BOS banks and write out to file
+                  write(4, *) npart, 1, 1, 1, flag_ehel, \
+                  11, ebeam, 1, 1, 0.0
+                  do i = 1, npart
+                     write(4, *) i, 0.0, 1, pdgid(i), 0, 0, \
+                     p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
+                     pdgid(i), v(i, 1), v(i, 2), v(i, 3)
+                  end do
                endif
   241          continue
             enddo
@@ -1852,13 +1863,21 @@ c     motion algorithm:
 c
 c     * Rotate and boost aao_rad's final state thrown particles
 c     * Add spectator particle to output
-                  write(*,*) "bos_out_fermi_motion"
-c                  call bos_out_fermi_motion(target_type,spectator_type,
-c     +                 spectator,
-c     +                 invrotate,invboost)
+                  write(4, *) npart, 1, 1, 1, flag_ehel, \
+                  11, ebeam, 1, 1, 0.0
+                  do i = 1, npart
+                     write(4, *) i, 0.0, 1, pdgid(i), 0, 0, \
+                     p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
+                     pdgid(i), v(i, 1), v(i, 2), v(i, 3)
+                  end do
                else
-                  write(*,*) "bos_out"
-c                  call bos_out     ! Pack the BOS banks and write out to file
+                  write(4, *) npart, 1, 1, 1, flag_ehel, \
+                  11, ebeam, 1, 1, 0.0
+                  do i = 1, npart
+                     write(4, *) i, 0.0, 1, pdgid(i), 0, 0, \
+                     p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
+                     pdgid(i), v(i, 1), v(i, 2), v(i, 3)
+                  end do
                endif
   242          continue
             enddo

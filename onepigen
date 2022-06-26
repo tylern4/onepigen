@@ -98,7 +98,7 @@ experiments = {
         'fermi_motion': 1,
         'fermi_energy': 2,
     },
-    'rga': {
+    'rgb': {
         'flag_ehel': 0,
         'epirea': 3,
         'radeffects': 1,

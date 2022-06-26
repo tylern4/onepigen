@@ -50,4 +50,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 
 clean:
-	rm -f lib/*.o bin/aao_rad
+	rm -f lib/*.o bin/$(PROGRAM)_lund
