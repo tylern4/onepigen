@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+import argparse
+import sys
+import subprocess
+import io
+
+
+inputfile = """!
+! Make sure to keep the &args and the final /, this is parsed using
+! Fortran's namelist I/O
+&args
+ nmax = {trig}        ! number of events to throw/simulate
+ th_opt = 5        ! (MAID2007)
+ flag_ehel = {flag_ehel}    ! electron helicity flag (1 for polarized, 0 for unpolarized)
+ epirea = {epirea}        ! reaction channel (1=pi0, 2=pi-, 3=pi+)
+ radeffects = {radeffects}    ! radiative effects switch (1=rad, 0=norad)
+ mm_cut = {mm_cut}      ! a limit on the error in (mm)**2 (GeV^2)
+ reg1 = {reg1}       ! integration region sizes
+ reg2 = {reg2}       ! ||
+ reg3 = {reg3}       ! ||
+ reg4 = {reg4}       ! ||
+ t_targ = {t_targ}      ! target cell length/thickness (cm)
+ r_targ = {r_targ}      ! target cell radius (cm)
+ vertex_x = {vertex_x}    ! x-coordinate of beam position (cm)
+ vertex_y = {vertex_y}    ! y-coordinate ||  ||     ||     ||
+ vz = {vz}         ! z-coordiante ||  ||     ||     ||
+ beam_energy = {beam_energy} ! beam energy (GeV)
+ q2_min = {q2_min}      ! Q^2 minimum (GeV^2)
+ q2_max = {q2_max}      ! Q^2 maximum (GeV^2)
+ w_min = {w_min}        ! W minimum (GeV)
+ w_max = {w_max}        ! W maximum (GeV)
+! Add W limits once that functionality is added to onepigen.  Make
+! sure to add a note to this file that tells the user that W > 1.7 GeV
+! is potentially unsafe.
+ ep_min = {ep_min}      ! minimum scattered electron energy (GeV)
+ ep_max = {ep_max}      ! maximum     ||       ||      ||     ||
+ delta = {delta}     ! minimum photon energy for integration (GeV)
+ fmcall = {fmcall}       ! multiplication factor for sigr_max
+ sigr_max = {sigr_max}  ! sigr_max
+! END OF ORIGINAL onepigen OPTIONS
+!     fermi_motion is an integer variable for controlling Fermi smearing
+!     behavior:
+!
+!     fermi_motion = 0: No Fermi-motion (Normal onepigen behavior)
+!     fermi_motion = 1: Deuterium target, CD-Bonn target Fermi momentum
+!     (BELOW OPTIONS INOPERABLE)
+!     fermi_motion = 2: Deuterium target, Paris target Fermi momentum
+!     fermi_motion = 3: Deuterium target, Hulthen target Fermi momentum
+ fermi_motion = {fermi_motion}
+
+!     fermi_energy is an integer variable for controlling how the energy
+!     component of the Fermi-moving target is handled for calculating
+!     the boost; there is a fixed value for conserving energy and
+!     momentum later in the calculations:
+!
+!     fermi_energy = 0: On-mass shell
+!     fermi_energy = 1: Constantly the hadron mass - 2 MeV
+!     fermi_energy = 2: Virtuality is shared equally by the nucleons,
+!                       i.e. energy = m + T + virtuality,
+!                       virtuality = 0.5*(md - mp + mn + Tp + Tn)
+!     
+ fermi_energy = {fermi_energy}
+
+! POTENTIAL FUTURE OPTIONS
+! target_type = 1   ! target particle type, 0 for neutron, 1 for proton
+! offshellness = 0  ! 0 for nucleon on-shell, 1 for electron on-shell, 2 for 50% virtuality to each nucleon
+! spectator_p = 1/  ! 1 for spectator in output, 0 for no
+
+/
+"""
+
+
+experiments = {
+    'default': {
+        'flag_ehel': 0,
+        'epirea': 3,
+        'radeffects': 1,
+        'mm_cut': 0.2,
+        'reg1': 0.20,
+        'reg2': 0.12,
+        'reg3': 0.20,
+        'reg4': 0.20,
+        't_targ': 2.0,
+        'r_targ': 0.6,
+        'vertex_x': 0.0,
+        'vertex_y': 0.0,
+        'vz': -0.4,
+        'beam_energy': 2.039,
+        'q2_min': 0.2,
+        'q2_max': 1.9,
+        'w_min': 1.0,
+        'w_max': 2.0,
+        'ep_min': 0.3,
+        'ep_max': 1.8,
+        'delta': 0.005,
+        'fmcall': 0.0,
+        'sigr_max': 0.005,
+        'fermi_motion': 1,
+        'fermi_energy': 2,
+    },
+    'rga': {
+        'flag_ehel': 0,
+        'epirea': 3,
+        'radeffects': 1,
+        'mm_cut': 0.2,
+        'reg1': 0.20,
+        'reg2': 0.12,
+        'reg3': 0.20,
+        'reg4': 0.20,
+        't_targ': 5.0,
+        'r_targ': 2.5,
+        'vertex_x': 0.0,
+        'vertex_y': 0.0,
+        'vz': -0.4,
+        'beam_energy': 4.244,
+        'q2_min': 0.2,
+        'q2_max': 1.9,
+        'w_min': 1.0,
+        'w_max': 2.0,
+        'ep_min': 0.3,
+        'ep_max': 1.8,
+        'delta': 0.005,
+        'fmcall': 0.0,
+        'sigr_max': 0.005,
+        'fermi_motion': 1,
+        'fermi_energy': 2,
+    }
+}
+
+
+def onepigen(infile):
+    process = subprocess.Popen(['onepigen_lund'], stdin=subprocess.PIPE)
+    process.communicate(bytes(infile, 'utf-8'))
+
+
+if __name__ == '__main__':
+    # Argument parser
+    parser = argparse.ArgumentParser(description='Run onepigen')
+    parser.add_argument('--trig', default=100, type=int)
+    parser.add_argument('--docker', default=False, action='store_true')
+    parser.add_argument('--experiment', default="None", type=str)
+
+    # Prints out nice defaults for args
+    for k, v in experiments['default'].items():
+        parser.add_argument(f'--{k}', default=v, type=type(v))
+
+    # Parse the arguments
+    args = parser.parse_args()
+    # Save them as a dictionary
+    arguments = vars(args)
+
+    # If the experiment in in the list then pull those arguments
+    if args.experiment in experiments:
+        # Take in defailts from experiment
+        formater = experiments[args.experiment]
+        # Loop through arguments
+        for k, v in arguments.items():
+            # Skip some arguments not in defaults
+            if k in ['trig', 'docker', 'experiment']:
+                continue
+            # If we've set an other argument other then whats in the defaults
+            # then we want to keep that key and over ride the experiments value
+            if experiments['default'][k] != v:
+                formater[k] = v
+
+        formater['trig'] = args.trig
+    else:
+        formater = arguments
+
+    # Pass the input file to the
+    onepigen(inputfile.format(**formater))

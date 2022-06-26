@@ -2,3 +2,6 @@
 *.o
 *.root
 *.bos
+onepigen.out
+onepigen.sum
+bin
