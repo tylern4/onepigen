@@ -20,3 +20,22 @@ The program is controlled via the standard input, and accepts
 Fortran's namelist I/O formatting.  This seems to be the most
 efficient way to handle the large number of control parameters the
 program accepts as opposed to flags supplied at the command line.
+
+## Build and run
+
+Clone the repo and build onepigen
+```
+git clone https://github.com/tylern4/onepigen.git
+cd onepigen
+make
+```
+
+Inside the onepigen directory add the executable `onepigen_lund` to your path so the python script can find it.
+```
+export PATH=${PATH}:${PWD}/bin
+```
+
+Run the python script
+```
+./onepigen --trig=100 --experiment=rgb
+```
