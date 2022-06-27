@@ -10,9 +10,9 @@ inputfile = """!
 ! Fortran's namelist I/O
 &args
  nmax = {trig}        ! number of events to throw/simulate
- th_opt = 5        ! (MAID2007)
+ th_opt = 7        ! (MAID2007)
  flag_ehel = {flag_ehel}    ! electron helicity flag (1 for polarized, 0 for unpolarized)
- epirea = {epirea}        ! reaction channel (1=pi0, 2=pi-, 3=pi+)
+ epirea = {epirea}        ! reaction channel (1=pi0 (PPpi), 2=pi- (NPpi), 3=pi+ (PNpi))
  radeffects = {radeffects}    ! radiative effects switch (1=rad, 0=norad)
  mm_cut = {mm_cut}      ! a limit on the error in (mm)**2 (GeV^2)
  reg1 = {reg1}       ! integration region sizes
