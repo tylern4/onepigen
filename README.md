@@ -39,3 +39,45 @@ Run the python script
 ```
 ./onepigen --trig=100 --experiment=rgb
 ```
+
+
+All options
+```
+usage: onepigen [-h] [--trig TRIG] [--docker] [--experiment EXPERIMENT] [--flag_ehel FLAG_EHEL] [--epirea EPIREA] [--radeffects RADEFFECTS] [--mm_cut MM_CUT] [--reg1 REG1] [--reg2 REG2]
+                [--reg3 REG3] [--reg4 REG4] [--t_targ T_TARG] [--r_targ R_TARG] [--vertex_x VERTEX_X] [--vertex_y VERTEX_Y] [--vz VZ] [--beam_energy BEAM_ENERGY] [--q2_min Q2_MIN]
+                [--q2_max Q2_MAX] [--w_min W_MIN] [--w_max W_MAX] [--ep_min EP_MIN] [--ep_max EP_MAX] [--delta DELTA] [--fmcall FMCALL] [--sigr_max SIGR_MAX] [--fermi_motion FERMI_MOTION]
+                [--fermi_energy FERMI_ENERGY]
+
+Run onepigen
+
+options:
+  -h, --help            show this help message and exit
+  --trig TRIG
+  --docker
+  --experiment EXPERIMENT
+  --flag_ehel FLAG_EHEL
+  --epirea EPIREA
+  --radeffects RADEFFECTS
+  --mm_cut MM_CUT
+  --reg1 REG1
+  --reg2 REG2
+  --reg3 REG3
+  --reg4 REG4
+  --t_targ T_TARG
+  --r_targ R_TARG
+  --vertex_x VERTEX_X
+  --vertex_y VERTEX_Y
+  --vz VZ
+  --beam_energy BEAM_ENERGY
+  --q2_min Q2_MIN
+  --q2_max Q2_MAX
+  --w_min W_MIN
+  --w_max W_MAX
+  --ep_min EP_MIN
+  --ep_max EP_MAX
+  --delta DELTA
+  --fmcall FMCALL
+  --sigr_max SIGR_MAX
+  --fermi_motion FERMI_MOTION
+  --fermi_energy FERMI_ENERGY
+```
