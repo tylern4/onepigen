@@ -1170,18 +1170,18 @@ c     motion algorithm:
 c
 c     * Rotate and boost aao_rad's final state thrown particles
 c     * Add spectator particle to output
-                  write(4, '(*(G0.6,:,"'//achar(9)//'"))') npart, 1, 1, 1, flag_ehel, \
+                  write(4, '(*(G0.6,:,"'//achar(32)//'"))') npart, 1, 1, 1, flag_ehel, \
                   11, ebeam, 1, 1, 0.0
                   do i = 1, npart
-                     write(4, '(*(G0.6,:,"'//achar(9)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
+                     write(4, '(*(G0.6,:,"'//achar(32)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
                      p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
                      pdgid(i), v(i, 1), v(i, 2), v(i, 3)
                   end do
                else
-                  write(4, '(*(G0.6,:,"'//achar(9)//'"))') npart, 1, 1, 1, flag_ehel, \
+                  write(4, '(*(G0.6,:,"'//achar(32)//'"))') npart, 1, 1, 1, flag_ehel, \
                   11, ebeam, 1, 1, 0.0
                   do i = 1, npart
-                     write(4, '(*(G0.6,:,"'//achar(9)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
+                     write(4, '(*(G0.6,:,"'//achar(32)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
                      p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
                      pdgid(i), v(i, 1), v(i, 2), v(i, 3)
                   end do
@@ -1863,18 +1863,18 @@ c     motion algorithm:
 c
 c     * Rotate and boost aao_rad's final state thrown particles
 c     * Add spectator particle to output
-                  write(4, '(*(G0.6,:,"'//achar(9)//'"))') npart, 1, 1, 1, flag_ehel, \
+                  write(4, '(*(G0.6,:,"'//achar(32)//'"))') npart, 1, 1, 1, flag_ehel, \
                   11, ebeam, 1, 1, 0.0
                   do i = 1, npart
-                     write(4, '(*(G0.6,:,"'//achar(9)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
+                     write(4, '(*(G0.6,:,"'//achar(32)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
                      p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
                      pdgid(i), v(i, 1), v(i, 2), v(i, 3)
                   end do
                else
-                  write(4, '(*(G0.6,:,"'//achar(9)//'"))') npart, 1, 1, 1, flag_ehel, \
+                  write(4, '(*(G0.6,:,"'//achar(32)//'"))') npart, 1, 1, 1, flag_ehel, \
                   11, ebeam, 1, 1, 0.0
                   do i = 1, npart
-                     write(4, '(*(G0.6,:,"'//achar(9)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
+                     write(4, '(*(G0.6,:,"'//achar(32)//'"))') i, 0.0, 1, pdgid(i), 0, 0, \
                      p(i, 1), p(i, 2), p(i, 3), p(i, 4), \
                      pdgid(i), v(i, 1), v(i, 2), v(i, 3)
                   end do
