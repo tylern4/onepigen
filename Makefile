@@ -8,7 +8,7 @@ CFLAGS = -g -Ofast -Wno-pointer-to-int-cast -Iinclude
 
 SRC_DIR = src
 OBJ_DIR = lib
-BIN_DIR = bin
+BIN_DIR = .
 
 # source files and objects
 FSRCS = $(wildcard $(SRC_DIR)/*.f90)
@@ -26,7 +26,10 @@ MKDIR_P = mkdir -p
 .PHONY: directories
 
 
-all: directories $(COBJ) $(FOBJ) $(FFOBJ) $(PROGRAM)
+all: directories spp_tbl $(COBJ) $(FOBJ) $(FFOBJ) $(PROGRAM)
+
+spp_tbl:
+	tar -xvf spp_tbl.tar.gz
 
 directories: ${OBJ_DIR} ${BIN_DIR}
 
@@ -37,7 +40,7 @@ ${BIN_DIR}:
 	${MKDIR_P} ${BIN_DIR}
 
 $(PROGRAM): $(FOBJ) $(COBJ)
-	$(FC) $(FCFLAGS) -o bin/$@_lund $(COBJ) $(FOBJ) $(FFOBJ)
+	$(FC) $(FCFLAGS) -o ${BIN_DIR}/$@_lund $(COBJ) $(FOBJ) $(FFOBJ)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90 
 	$(FC) $(FCFLAGS) -c $< -o $@
@@ -50,4 +53,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 
 clean:
-	rm -f lib/*.o bin/$(PROGRAM)_lund
+	rm -f ${OBJ_DIR}/*.o ${BIN_DIR}/$(PROGRAM)_lund

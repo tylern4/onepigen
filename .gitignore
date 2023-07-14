@@ -3,5 +3,8 @@
 *.root
 *.bos
 onepigen.out
+onepigen.dat
 onepigen.sum
 bin
+onepigen_lund
+spp_tbl
