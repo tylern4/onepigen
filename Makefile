@@ -39,7 +39,7 @@ ${OBJ_DIR}:
 ${BIN_DIR}:
 	${MKDIR_P} ${BIN_DIR}
 
-$(PROGRAM): $(FOBJ) $(COBJ)
+$(PROGRAM): $(FOBJ) $(COBJ) $(FFOBJ)
 	$(FC) $(FCFLAGS) -o ${BIN_DIR}/$@_lund $(COBJ) $(FOBJ) $(FFOBJ)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90 
