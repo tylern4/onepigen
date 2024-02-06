@@ -29,7 +29,7 @@ MKDIR_P = mkdir -p
 all: directories spp_tbl $(COBJ) $(FOBJ) $(FFOBJ) $(PROGRAM)
 
 spp_tbl:
-	tar -xvf spp_tbl.tar.gz
+	tar -xvf spp_tbl.tar.gz && chmod +rx spp_tbl
 
 directories: ${OBJ_DIR} ${BIN_DIR}
 
