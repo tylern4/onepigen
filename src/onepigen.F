@@ -177,7 +177,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
          integer ehel
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
          integer*4 idum
-         integer*4 ntries
+         integer*8 ntries
 
          real cfac,asig
 
